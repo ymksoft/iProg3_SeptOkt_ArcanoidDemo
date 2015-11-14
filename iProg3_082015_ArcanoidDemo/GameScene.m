@@ -70,8 +70,7 @@
     self.isTouchDesk = [nodesInTouchLocation containsObject:self.desk];
 }
 
--(void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    
+- (void)updateDeskPosition:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event  {
     if(self.isTouchDesk == NO) return;
     
     UITouch *touch = [touches anyObject];
@@ -84,7 +83,24 @@
     CGPoint newPosition = self.desk.position;
     newPosition.x = newDeskX;
     
+    CGFloat deskWidth = CGRectGetWidth(self.desk.frame);
+    //      left border
+    if( newPosition.x < deskWidth / 2) {
+        newPosition.x = deskWidth / 2;
+    }
+    //      right boreder
+    if( newPosition.x > CGRectGetWidth(self.frame) - deskWidth/2) {
+        newPosition.x = CGRectGetWidth(self.frame) - deskWidth/2;
+    }
+    
     self.desk.position = newPosition;
+    
+    
+}
+
+-(void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    
+    [self updateDeskPosition:touches withEvent:event];
 }
 
 -(void)update:(CFTimeInterval)currentTime {
