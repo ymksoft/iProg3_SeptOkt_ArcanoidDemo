@@ -8,10 +8,15 @@
 
 #import "GameScene.h"
 
+static const CGFloat kBallMinAllowedSpeed = 20;
+static const CGFloat kBallXYSpeedToSet = 60;
+
 @interface GameScene()
 
 @property (nonatomic,strong) SKSpriteNode *desk;
 @property (nonatomic) BOOL isTouchDesk;
+@property (nonatomic,strong) SKSpriteNode *ball;
+
 @end
 
 @implementation GameScene
@@ -26,6 +31,13 @@
         _desk.physicsBody.angularDamping = 0;
     }
     return _desk;
+}
+
+-(SKSpriteNode *)ball {
+    if(!_ball) {
+        _ball = [self setupBall];
+    }
+    return _ball;
 }
 
 #pragma mark GameScene life cycle
@@ -45,7 +57,7 @@
     
 }
 
--(void)setupBall {
+-(SKSpriteNode *)setupBall {
     
     SKSpriteNode *ball = (SKSpriteNode *)[self childNodeWithName:@"ball"];
     NSParameterAssert(ball);
@@ -57,6 +69,8 @@
     ball.physicsBody.allowsRotation = NO;
     
     [ball.physicsBody applyImpulse:CGVectorMake(15, -10)];
+    
+    return ball;
     
 }
 
@@ -101,6 +115,35 @@
 -(void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     
     [self updateDeskPosition:touches withEvent:event];
+}
+
+#pragma mark Updates
+
+-(void)didSimulatePhysics {
+    [self fixBallBug];
+}
+
+-(void)fixBallBug {
+    // перемещение мяча
+    if( fabs(self.ball.physicsBody.velocity.dx) < kBallMinAllowedSpeed) {
+        CGVector velocity = self.ball.physicsBody.velocity;
+        velocity.dx = self.ball.position.x > CGRectGetWidth(self.frame)/2 ? -kBallXYSpeedToSet : kBallXYSpeedToSet ;
+        
+        SKPhysicsBody *body = self.ball.physicsBody;
+        self.ball.physicsBody = nil;
+        body.velocity = velocity;
+        self.ball.physicsBody = body;
+    }
+    
+    if( fabs(self.ball.physicsBody.velocity.dy) < kBallMinAllowedSpeed) {
+        CGVector velocity = self.ball.physicsBody.velocity;
+        velocity.dy =  -kBallXYSpeedToSet;
+        
+        SKPhysicsBody *body = self.ball.physicsBody;
+        self.ball.physicsBody = nil;
+        body.velocity = velocity;
+        self.ball.physicsBody = body;
+    }
 }
 
 -(void)update:(CFTimeInterval)currentTime {
