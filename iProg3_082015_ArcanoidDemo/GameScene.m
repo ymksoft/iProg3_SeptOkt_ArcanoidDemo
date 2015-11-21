@@ -8,6 +8,10 @@
 
 #import "GameScene.h"
 #import "ArcanoidConstants.h"
+#import "GameOverScene.h"
+#import "Brick.h"
+#import "GameHUD.h"
+#import "Bonus.h"
 
 static const CGFloat kBallMinAllowedSpeed = 20;
 static const CGFloat kBallXYSpeedToSet = 60;
@@ -16,8 +20,11 @@ static const CGFloat kBallXYSpeedToSet = 60;
 
 @property (nonatomic,strong) SKSpriteNode *desk;
 @property (nonatomic,strong) SKSpriteNode *gameOverLine;
-@property (nonatomic) BOOL isTouchDesk;
 @property (nonatomic,strong) SKSpriteNode *ball;
+@property (nonatomic,strong) Bonus *currentBonus;
+
+@property (nonatomic) BOOL isTouchDesk;
+@property (nonatomic,strong) GameHUD *hud;
 
 @end
 
@@ -61,7 +68,29 @@ static const CGFloat kBallXYSpeedToSet = 60;
     return _ball;
 }
 
-#pragma mark GameScene life cycle
+#pragma mark - Init
+
++ (instancetype)unarchiveFromFile:(NSString *)file {
+    
+    // перенсли из gameviewcontroller!!!
+    
+    /* Retrieve scene file path from the application bundle */
+    NSString *nodePath = [[NSBundle mainBundle] pathForResource:file ofType:@"sks"];
+    /* Unarchive the file to an SKScene object */
+    NSData *data = [NSData dataWithContentsOfFile:nodePath
+                                          options:NSDataReadingMappedIfSafe
+                                            error:nil];
+    NSKeyedUnarchiver *arch = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+    [arch setClass:self forClassName:@"SKScene"];
+    SKScene *scene = [arch decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+    [arch finishDecoding];
+    
+    scene.scaleMode = SKSceneScaleModeAspectFill;
+    
+    return (GameScene *)scene;
+}
+
+#pragma mark - GameScene life cycle
 
 -(void)didMoveToView:(SKView *)view {
     
@@ -83,6 +112,38 @@ static const CGFloat kBallXYSpeedToSet = 60;
     // линия контроля выхода мячика за сцену
     [self addChild:self.gameOverLine];
     
+    [self loadBricks];
+    
+    [self addHUD];
+}
+
+-(void)addHUD {
+    
+    if( !self.hud) {
+        self.hud = [[GameHUD alloc] initWithSize:CGSizeMake(self.size.width, self.size.height/20)];
+        self.hud.position = CGPointMake(self.size.width /2, self.size.height);
+        [self addChild:self.hud];
+    }
+    
+}
+
+-(void)loadBricks {
+    
+    CGFloat y = CGRectGetHeight(self.frame) - 35;
+    int rowsCount = 6;
+
+    for(int i = 0; i < rowsCount; i++) {
+        
+        CGFloat margin = i % 2 ? 35 : 15;
+        
+        for( CGFloat x = margin; x < CGRectGetWidth(self.frame)-margin; x+= 40) {
+            Brick *aBrick = [Brick brickAtPoint:CGPointMake(x, y)];
+            [self addChild:aBrick];
+        }
+        
+        y-=35;
+    }
+    
 }
 
 -(SKSpriteNode *)setupBall {
@@ -97,15 +158,19 @@ static const CGFloat kBallXYSpeedToSet = 60;
     ball.physicsBody.allowsRotation = NO;
     
     ball.physicsBody.categoryBitMask = PhysicsCategoryBall;             // битовая маска мячей
-    ball.physicsBody.contactTestBitMask = PhysicsCategoryGameOverLine;  // битовая маска объектов взаимодействия - например линия выхода за пределы игрового поля
+    ball.physicsBody.contactTestBitMask = PhysicsCategoryGameOverLine | PhysicsCategoryBrick;  // битовая маска объектов взаимодействия - например линия выхода за пределы игрового поля
+    
+    ball.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetHeight(self.frame)/4);
     
     [ball.physicsBody applyImpulse:CGVectorMake(15, -10)];
+    
+    ball.physicsBody.usesPreciseCollisionDetection = YES;
     
     return ball;
     
 }
 
-#pragma mark Touches events
+#pragma mark - Touches events
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 
@@ -197,16 +262,66 @@ static const CGFloat kBallXYSpeedToSet = 60;
         bodyB = contact.bodyA;
     }
     
+    [self testForGameOver:bodyA bodyB:bodyB];
+    [self testForBrickCollision:bodyA bodyB:bodyB];
+    
+}
+
+-(void)testForGameOver:(SKPhysicsBody *)bodyA bodyB:(SKPhysicsBody *)bodyB {
     if(PhysicsCategoryIs(bodyA.categoryBitMask, PhysicsCategoryBall) &&
        PhysicsCategoryIs(bodyB.categoryBitMask, PhysicsCategoryGameOverLine)) {
         NSLog(@"show gameover");
         [self showGameOver];
     }
+}
+
+-(void)testForBrickCollision:(SKPhysicsBody *)bodyA bodyB:(SKPhysicsBody *)bodyB {
+    if(PhysicsCategoryIs(bodyA.categoryBitMask, PhysicsCategoryBall) &&
+       PhysicsCategoryIs(bodyB.categoryBitMask, PhysicsCategoryBrick)) {
+        NSLog(@"show brick collision");
+        
+        self.hud.score += 10;
+
+        [self addBonusFromPoint:bodyB.node.position];
+        [self removeBrick:bodyB];
+    }
+}
+
+-(void)addBonusFromPoint:(CGPoint)point {
     
+    // рандом сила
+    int posibility = 2;
+    if( arc4random() % posibility != 0) {
+        return;
+    }
+    
+    Bonus *myBonus = [Bonus bonusOfType:BonusTypeFire];
+    myBonus.position = point;
+    
+    [self addChild:myBonus];
+    [myBonus.physicsBody applyImpulse:CGVectorMake(0, -10)];
+    
+}
+
+-(void)removeBrick:(SKPhysicsBody *)brick {
+    
+    SKAction *fade = [SKAction fadeOutWithDuration:0.3];
+    SKAction *removeFromParent = [SKAction runBlock:^{
+            [brick.node removeFromParent];
+        }];
+    SKAction *sequence = [SKAction sequence:@[fade,removeFromParent]];
+    [brick.node runAction:sequence];
 }
 
 -(void)showGameOver {
     
+    SetHightScore(self.hud.hightScore);
+    
+    GameOverScene *scene =[[GameOverScene alloc] initWithSize:self.size victory:NO score:self.hud.score];
+    
+    SKTransition *transition = [SKTransition doorsCloseVerticalWithDuration:1];
+    [self.view  presentScene:scene
+                  transition:transition];
     
     
     

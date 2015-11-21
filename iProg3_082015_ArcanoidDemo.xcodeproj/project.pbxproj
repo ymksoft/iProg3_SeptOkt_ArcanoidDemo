@@ -8,6 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		485912971C0066B100C1180A /* GameOverScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 485912961C0066B100C1180A /* GameOverScene.m */; };
+		4859129A1C00756E00C1180A /* Brick.m in Sources */ = {isa = PBXBuildFile; fileRef = 485912991C00756E00C1180A /* Brick.m */; };
+		4859129E1C00796C00C1180A /* brick@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4859129B1C00796C00C1180A /* brick@3x.png */; };
+		4859129F1C00796C00C1180A /* brick@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4859129C1C00796C00C1180A /* brick@2x.png */; };
+		485912A01C00796C00C1180A /* brick.png in Resources */ = {isa = PBXBuildFile; fileRef = 4859129D1C00796C00C1180A /* brick.png */; };
+		485912A21C00884500C1180A /* ArcanoidConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 485912A11C00884500C1180A /* ArcanoidConstants.m */; };
+		485912A51C00921000C1180A /* GameHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 485912A41C00921000C1180A /* GameHUD.m */; };
+		485912A81C00A8C100C1180A /* Bonus.m in Sources */ = {isa = PBXBuildFile; fileRef = 485912A71C00A8C100C1180A /* Bonus.m */; };
 		48A868341BF776EE000A14C2 /* fire.sks in Resources */ = {isa = PBXBuildFile; fileRef = 48A868321BF776EE000A14C2 /* fire.sks */; };
 		48A868351BF776EE000A14C2 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 48A868331BF776EE000A14C2 /* spark.png */; };
 		4F0C60321B75E69C00A145CF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F0C60311B75E69C00A145CF /* main.m */; };
@@ -35,6 +42,16 @@
 		485912941C00560900C1180A /* ArcanoidConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArcanoidConstants.h; sourceTree = "<group>"; };
 		485912951C0066B100C1180A /* GameOverScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOverScene.h; sourceTree = "<group>"; };
 		485912961C0066B100C1180A /* GameOverScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameOverScene.m; sourceTree = "<group>"; };
+		485912981C00756E00C1180A /* Brick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Brick.h; sourceTree = "<group>"; };
+		485912991C00756E00C1180A /* Brick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Brick.m; sourceTree = "<group>"; };
+		4859129B1C00796C00C1180A /* brick@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "brick@3x.png"; sourceTree = "<group>"; };
+		4859129C1C00796C00C1180A /* brick@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "brick@2x.png"; sourceTree = "<group>"; };
+		4859129D1C00796C00C1180A /* brick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = brick.png; sourceTree = "<group>"; };
+		485912A11C00884500C1180A /* ArcanoidConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArcanoidConstants.m; sourceTree = "<group>"; };
+		485912A31C00921000C1180A /* GameHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameHUD.h; sourceTree = "<group>"; };
+		485912A41C00921000C1180A /* GameHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameHUD.m; sourceTree = "<group>"; };
+		485912A61C00A8C100C1180A /* Bonus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bonus.h; sourceTree = "<group>"; };
+		485912A71C00A8C100C1180A /* Bonus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bonus.m; sourceTree = "<group>"; };
 		48A868321BF776EE000A14C2 /* fire.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = fire.sks; sourceTree = "<group>"; };
 		48A868331BF776EE000A14C2 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		4F0C602C1B75E69C00A145CF /* iProg3_082015_ArcanoidDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iProg3_082015_ArcanoidDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,16 +115,26 @@
 				4F0C60341B75E69C00A145CF /* AppDelegate.m */,
 				4F0C60361B75E69C00A145CF /* GameScene.h */,
 				4F0C60371B75E69C00A145CF /* GameScene.m */,
+				485912A61C00A8C100C1180A /* Bonus.h */,
+				485912A71C00A8C100C1180A /* Bonus.m */,
 				485912951C0066B100C1180A /* GameOverScene.h */,
 				485912961C0066B100C1180A /* GameOverScene.m */,
+				485912A31C00921000C1180A /* GameHUD.h */,
+				485912A41C00921000C1180A /* GameHUD.m */,
 				485912941C00560900C1180A /* ArcanoidConstants.h */,
+				485912A11C00884500C1180A /* ArcanoidConstants.m */,
 				48A868321BF776EE000A14C2 /* fire.sks */,
 				48A868331BF776EE000A14C2 /* spark.png */,
 				4F0C60391B75E69C00A145CF /* GameScene.sks */,
 				4F0C603B1B75E69C00A145CF /* GameViewController.h */,
 				4F0C603C1B75E69C00A145CF /* GameViewController.m */,
+				485912981C00756E00C1180A /* Brick.h */,
+				485912991C00756E00C1180A /* Brick.m */,
 				4F0C603E1B75E69C00A145CF /* Main.storyboard */,
 				4F0C60411B75E69C00A145CF /* Images.xcassets */,
+				4859129B1C00796C00C1180A /* brick@3x.png */,
+				4859129C1C00796C00C1180A /* brick@2x.png */,
+				4859129D1C00796C00C1180A /* brick.png */,
 				4F0C60431B75E69C00A145CF /* LaunchScreen.xib */,
 				4F0C602F1B75E69C00A145CF /* Supporting Files */,
 			);
@@ -222,8 +249,11 @@
 			files = (
 				4F0C60451B75E69C00A145CF /* LaunchScreen.xib in Resources */,
 				48A868351BF776EE000A14C2 /* spark.png in Resources */,
+				485912A01C00796C00C1180A /* brick.png in Resources */,
 				4F0C60421B75E69C00A145CF /* Images.xcassets in Resources */,
 				48A868341BF776EE000A14C2 /* fire.sks in Resources */,
+				4859129F1C00796C00C1180A /* brick@2x.png in Resources */,
+				4859129E1C00796C00C1180A /* brick@3x.png in Resources */,
 				4F0C603A1B75E69C00A145CF /* GameScene.sks in Resources */,
 				4F0C60401B75E69C00A145CF /* Main.storyboard in Resources */,
 			);
@@ -243,11 +273,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				485912A81C00A8C100C1180A /* Bonus.m in Sources */,
 				485912971C0066B100C1180A /* GameOverScene.m in Sources */,
 				4F0C603D1B75E69C00A145CF /* GameViewController.m in Sources */,
 				4F0C60351B75E69C00A145CF /* AppDelegate.m in Sources */,
+				4859129A1C00756E00C1180A /* Brick.m in Sources */,
 				4F0C60381B75E69C00A145CF /* GameScene.m in Sources */,
 				4F0C60321B75E69C00A145CF /* main.m in Sources */,
+				485912A21C00884500C1180A /* ArcanoidConstants.m in Sources */,
+				485912A51C00921000C1180A /* GameHUD.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 //
-//  GameOverScene.h
+//  Brick.h
 //  iProg3_082015_ArcanoidDemo
 //
 //  Created by Юрий Куприянов on 21.11.15.
@@ -8,8 +8,8 @@
 
 #import <SpriteKit/SpriteKit.h>
 
-@interface GameOverScene : SKScene
+@interface Brick : SKSpriteNode
 
--(instancetype)initWithSize:(CGSize)size victory:(BOOL)playerWin score:(NSInteger)score;
++(instancetype)brickAtPoint:(CGPoint)point;
 
 @end

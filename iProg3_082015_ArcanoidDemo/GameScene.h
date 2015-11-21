@@ -10,4 +10,6 @@
 
 @interface GameScene : SKScene
 
++ (instancetype)unarchiveFromFile:(NSString *)file;
+
 @end

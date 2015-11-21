@@ -1,5 +1,5 @@
 //
-//  GameOverScene.h
+//  Bonus.h
 //  iProg3_082015_ArcanoidDemo
 //
 //  Created by Юрий Куприянов on 21.11.15.
@@ -8,8 +8,14 @@
 
 #import <SpriteKit/SpriteKit.h>
 
-@interface GameOverScene : SKScene
+typedef NS_ENUM(NSInteger, BonusType) {
+    BonusTypeFire
+};
 
--(instancetype)initWithSize:(CGSize)size victory:(BOOL)playerWin score:(NSInteger)score;
+@interface Bonus : SKSpriteNode
+
+@property (nonatomic) BonusType type;
+
++(instancetype)bonusOfType:(BonusType)type;
 
 @end
