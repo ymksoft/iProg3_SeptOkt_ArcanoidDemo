@@ -26,12 +26,13 @@
         body.categoryBitMask = PhysicsCategoryBouns;
         
         // от кого будет объект отскакивать - по умолчанию х32 1111....1111
-        body.collisionBitMask = 0; // не с кем не взаимодействовать, ""
-        body.contactTestBitMask = 0;
+        body.collisionBitMask = PhysicsCategoryBall; // не с кем не взаимодействовать, ""
+        //body.contactTestBitMask = PhysicsCategoryBall;
         // "проходить сквозь стены"
         
         
         self.physicsBody = body;
+        
     }
     
     return self;

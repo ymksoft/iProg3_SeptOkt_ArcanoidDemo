@@ -22,6 +22,7 @@ static const CGFloat kBallXYSpeedToSet = 60;
 @property (nonatomic,strong) SKSpriteNode *gameOverLine;
 @property (nonatomic,strong) SKSpriteNode *ball;
 @property (nonatomic,strong) Bonus *currentBonus;
+@property (nonatomic,strong) SKEmitterNode *fire;
 
 @property (nonatomic) BOOL isTouchDesk;
 @property (nonatomic,strong) GameHUD *hud;
@@ -57,6 +58,7 @@ static const CGFloat kBallXYSpeedToSet = 60;
         _desk.physicsBody.linearDamping = 0;
         _desk.physicsBody.angularDamping = 0;
         _desk.physicsBody.categoryBitMask = PhysicsCategoryDesk;
+        _desk.physicsBody.contactTestBitMask = PhysicsCategoryBouns;
     }
     return _desk;
 }
@@ -66,6 +68,40 @@ static const CGFloat kBallXYSpeedToSet = 60;
         _ball = [self setupBall];
     }
     return _ball;
+}
+
+-(void)setCurrentBonus:(Bonus *)currentBonus {
+    _currentBonus = currentBonus;
+    [self applyBonus:_currentBonus];
+}
+
+-(void)applyBonus:(Bonus *)bonus {
+    [bonus runAction:[SKAction fadeOutWithDuration:0.4] completion:^{
+        [bonus removeFromParent];
+    }];
+    
+    switch (bonus.type) {
+        case BonusTypeFire: {
+            NSString *pathToFile = [[NSBundle mainBundle] pathForResource:@"fire" ofType:@"sks"];
+            SKEmitterNode *fire = [NSKeyedUnarchiver unarchiveObjectWithFile:pathToFile];
+            
+            [self.fire removeFromParent];
+            
+            self.fire = fire;
+            self.fire.particleBirthRate = 150;
+            [self addChild:self.fire];
+            
+            self.fire.position = self.ball.position;
+            // чтобы агонь бегал за шаром
+            //self.fire.targetNode = self; // какая то проблемма тут
+            
+            break;
+        }
+            
+        default:
+            break;
+    }
+    
 }
 
 #pragma mark - Init
@@ -85,7 +121,7 @@ static const CGFloat kBallXYSpeedToSet = 60;
     SKScene *scene = [arch decodeObjectForKey:NSKeyedArchiveRootObjectKey];
     [arch finishDecoding];
     
-    scene.scaleMode = SKSceneScaleModeAspectFill;
+    scene.scaleMode = SKSceneScaleModeAspectFit;
     
     return (GameScene *)scene;
 }
@@ -158,7 +194,7 @@ static const CGFloat kBallXYSpeedToSet = 60;
     ball.physicsBody.allowsRotation = NO;
     
     ball.physicsBody.categoryBitMask = PhysicsCategoryBall;             // битовая маска мячей
-    ball.physicsBody.contactTestBitMask = PhysicsCategoryGameOverLine | PhysicsCategoryBrick;  // битовая маска объектов взаимодействия - например линия выхода за пределы игрового поля
+    ball.physicsBody.contactTestBitMask = PhysicsCategoryGameOverLine | PhysicsCategoryBrick | PhysicsCategoryBouns;  // битовая маска объектов взаимодействия - например линия выхода за пределы игрового поля
     
     ball.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetHeight(self.frame)/4);
     
@@ -240,6 +276,8 @@ static const CGFloat kBallXYSpeedToSet = 60;
         body.velocity = velocity;
         self.ball.physicsBody = body;
     }
+    
+    self.fire.position = self.ball.position;
 }
 
 -(void)update:(CFTimeInterval)currentTime {
@@ -264,7 +302,16 @@ static const CGFloat kBallXYSpeedToSet = 60;
     
     [self testForGameOver:bodyA bodyB:bodyB];
     [self testForBrickCollision:bodyA bodyB:bodyB];
+    [self testForGettingBonus:bodyA bodyB:bodyB];
     
+}
+
+-(void)testForBonusKill:(SKPhysicsBody *)bodyA bodyB:(SKPhysicsBody *)bodyB {
+    if(PhysicsCategoryIs(bodyA.categoryBitMask, PhysicsCategoryBall) &&
+       PhysicsCategoryIs(bodyB.categoryBitMask, PhysicsCategoryBouns)) {
+        NSLog(@"show bonus kill");
+        [self removeBrick:bodyB];
+    }
 }
 
 -(void)testForGameOver:(SKPhysicsBody *)bodyA bodyB:(SKPhysicsBody *)bodyB {
@@ -282,8 +329,26 @@ static const CGFloat kBallXYSpeedToSet = 60;
         
         self.hud.score += 10;
 
+        if(self.fire) {
+            // удалить несколько кирпичей рядом
+            
+        }
+        
         [self addBonusFromPoint:bodyB.node.position];
         [self removeBrick:bodyB];
+        
+        
+    }
+}
+
+-(void)testForGettingBonus:(SKPhysicsBody *)bodyA bodyB:(SKPhysicsBody *)bodyB {
+    if(PhysicsCategoryIs(bodyA.categoryBitMask, PhysicsCategoryDesk) &&
+       PhysicsCategoryIs(bodyB.categoryBitMask, PhysicsCategoryBouns)) {
+        NSLog(@"show bonus");
+        
+        self.currentBonus = (Bonus *)bodyB.node;
+        self.currentBonus.physicsBody = nil;
+        
     }
 }
 
