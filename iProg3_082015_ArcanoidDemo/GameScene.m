@@ -7,19 +7,39 @@
 //
 
 #import "GameScene.h"
+#import "ArcanoidConstants.h"
 
 static const CGFloat kBallMinAllowedSpeed = 20;
 static const CGFloat kBallXYSpeedToSet = 60;
 
-@interface GameScene()
+@interface GameScene() <SKPhysicsContactDelegate>
 
 @property (nonatomic,strong) SKSpriteNode *desk;
+@property (nonatomic,strong) SKSpriteNode *gameOverLine;
 @property (nonatomic) BOOL isTouchDesk;
 @property (nonatomic,strong) SKSpriteNode *ball;
 
 @end
 
 @implementation GameScene
+
+-(SKSpriteNode *)gameOverLine {
+    if(!_gameOverLine) {
+        _gameOverLine = [SKSpriteNode new];
+        
+        CGRect bodyRect = CGRectMake(0,
+                                     0,
+                                     CGRectGetWidth(self.frame),
+                                     1);
+        
+        _gameOverLine.physicsBody  = [SKPhysicsBody bodyWithEdgeLoopFromRect:bodyRect];
+        _gameOverLine.physicsBody.categoryBitMask = PhysicsCategoryGameOverLine;
+       // _gameOverLine.physicsBody.contactTestBitMask = PhysicsCategoryBall; - достаточно описать только для мяча
+        _gameOverLine.name = @"game over line";
+        
+    }
+    return _gameOverLine;
+}
 
 -(SKSpriteNode *)desk {
     if(!_desk) {
@@ -29,6 +49,7 @@ static const CGFloat kBallXYSpeedToSet = 60;
         _desk.physicsBody.restitution = 1;
         _desk.physicsBody.linearDamping = 0;
         _desk.physicsBody.angularDamping = 0;
+        _desk.physicsBody.categoryBitMask = PhysicsCategoryDesk;
     }
     return _desk;
 }
@@ -48,12 +69,19 @@ static const CGFloat kBallXYSpeedToSet = 60;
     SKPhysicsBody *border = [SKPhysicsBody bodyWithEdgeLoopFromRect:self.frame];
     border.friction = 0; // трение скольжения
     self.physicsBody = border;
+    //self.physicsBody.categoryBitMask = 0; - шарик улетит если так делать
     
     // управление гравитацией в мире
     self.physicsWorld.gravity = CGVectorMake(0, 0); // уровень без гравитации
     
+    // делегирование
+    self.physicsWorld.contactDelegate = self;
+    
     // мячик
     [self setupBall];
+    
+    // линия контроля выхода мячика за сцену
+    [self addChild:self.gameOverLine];
     
 }
 
@@ -67,6 +95,9 @@ static const CGFloat kBallXYSpeedToSet = 60;
     ball.physicsBody.linearDamping = 0;     // замедление при столкновении
     ball.physicsBody.angularDamping = 0;    // замеделение вращения
     ball.physicsBody.allowsRotation = NO;
+    
+    ball.physicsBody.categoryBitMask = PhysicsCategoryBall;             // битовая маска мячей
+    ball.physicsBody.contactTestBitMask = PhysicsCategoryGameOverLine;  // битовая маска объектов взаимодействия - например линия выхода за пределы игрового поля
     
     [ball.physicsBody applyImpulse:CGVectorMake(15, -10)];
     
@@ -149,5 +180,39 @@ static const CGFloat kBallXYSpeedToSet = 60;
 -(void)update:(CFTimeInterval)currentTime {
     
 }
+
+#pragma mark - Physics
+
+-(void)didBeginContact:(SKPhysicsContact *)contact {
+    
+    SKPhysicsBody *bodyA;
+    SKPhysicsBody *bodyB; // больше А по условию
+    
+    if( contact.bodyB.categoryBitMask > contact.bodyA.categoryBitMask ) {
+        bodyB = contact.bodyB;
+        bodyA = contact.bodyA;
+    }
+    else {
+        bodyA = contact.bodyB;
+        bodyB = contact.bodyA;
+    }
+    
+    if(PhysicsCategoryIs(bodyA.categoryBitMask, PhysicsCategoryBall) &&
+       PhysicsCategoryIs(bodyB.categoryBitMask, PhysicsCategoryGameOverLine)) {
+        NSLog(@"show gameover");
+        [self showGameOver];
+    }
+    
+}
+
+-(void)showGameOver {
+    
+    
+    
+    
+}
+
+
+
 
 @end
